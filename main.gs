@@ -61,7 +61,8 @@ function processDriveSidebarForm(e) {
 
   Logger.log(`All subfolders of ${folder.title} will be updated to ${colourName}`)
 
-  updateFolderColour(folder, e.formInput.colour, e.formInput.shared, e.formInput.multipleParents);
+  const result = updateFolderColour(folder, e.formInput.colour, e.formInput.shared, e.formInput.multipleParents, 0);
+  Logger.log(`We updated ${total} folders.`)
 
   return buildDriveHomePage(e);
 
@@ -71,56 +72,63 @@ function processDriveSidebarForm(e) {
 /**
  * Update the colour of the folder, and all child folders.
  * 
- * @param {Object} folder the folder to update
+ * @param {Object} folder the folder item to update
  * @param {String} colour the hex colour to set
  * @param {String} shared 'no', 'me', or 'all'
  * @param {String} multipleParents 'yes' or 'no'
  */
-function updateFolderColour(folder, colour, shared, multipleParents) {
+function updateFolderColour(folder, colour, shared, multipleParents, total) {
 
   // Apply the colour to the current folder
   const id = folder.id;
   const newFolder = Drive.newFile();
   newFolder.folderColorRgb = colour;
   Drive.Files.patch(newFolder, id);
-  Logger.log(`Updated ${folder.title}`);
+
+  // Search for the children
+  let params;
+  if (shared === "no" || shared === "me") {
+    params = {"maxResults": 1000, "orderBy": "title", "q": `mimeType = 'application/vnd.google-apps.folder' and '${id}' in parents and '${Session.getActiveUser().getEmail()}' in owners`};
+  } else {
+    params = {"maxResults": 1000, "orderBy": "title", "q": `mimeType = 'application/vnd.google-apps.folder' and ${id} in parents`};
+  }
+  const children = Drive.Files.list(params);
 
   // Iterate through the children
-  const params = { "newRevision": true, "pinned": true };
-  const children = Drive.Children.list(id, params)
-  for (const child in children.items) {
+  let child;
+  for (let i = 0; i<children.items.length; i++) {
 
-    // Get the item and skip if it's not a folder
-    const childFolder = Drive.Files.get(child.id);
-    if (childFolder.mimeType !== "application/vnd.google-apps.folder") {
-      continue;
-    }
+    child = children.items[i];
 
     // If the user doesn't want to update shared folders then skip if shared
     if (shared === "no") {
-      if (childFolder.shared === true) {
-        Logger.log(`Skipped ${childFolder.title} because it's shared.`);
+      if (child.shared === true) {
+        Logger.log(`Skipped ${child.title} because it's shared.`);
         continue;
       }
 
       // If the user only wants to update shared folder they own then skip those that aren't owned by them
     } else if (shared === "me") {
-      if (childFolder.owners[0].emailAddress !== Session.getActiveUser().getEmail()) {
-        Logger.log(`Skipped ${childFolder.title} because it's owned by someone else.`);
+      if (child.owners[0].emailAddress !== Session.getActiveUser().getEmail()) {
+        Logger.log(`Skipped ${child.title} because it's owned by someone else.`);
         continue;
       }
     }
 
     // If the user doesn't want to update folders with multiple parents then skip them
     if (multipleParents === "no") {
-      if (childFolder.parents.length > 1) {
-        Logger.log(`Skipped ${childFolder.title} because it has multiple parents.`);
+      if (child.parents.length > 1) {
+        Logger.log(`Skipped ${child.title} because it has multiple parents.`);
         continue;
       }
     }
 
     // Run the function recursively
-    updateFolderColour(childFolder, colour, shared, multipleParents);
+    total = updateFolderColour(child, colour, shared, multipleParents, total);
+
   }
+
+  Logger.log(`New total is ${total}`)
+  return total + children.items.length
 
 }
