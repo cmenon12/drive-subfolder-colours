@@ -61,8 +61,8 @@ function processDriveSidebarForm(e) {
 
   Logger.log(`All subfolders of ${folder.title} will be updated to ${colourName}`)
 
-  const result = updateFolderColour(folder, e.formInput.colour, e.formInput.shared, e.formInput.multipleParents, 0);
-  Logger.log(`We updated ${total} folders.`)
+  const result = updateFolderColour(folder, e.formInput.colour, e.formInput.shared, e.formInput.multipleParents, Session.getActiveUser().getEmail(), 0);
+  Logger.log(`We updated ${result} folders.`)
 
   return buildDriveHomePage(e);
 
@@ -77,7 +77,7 @@ function processDriveSidebarForm(e) {
  * @param {String} shared 'no', 'me', or 'all'
  * @param {String} multipleParents 'yes' or 'no'
  */
-function updateFolderColour(folder, colour, shared, multipleParents, total) {
+function updateFolderColour(folder, colour, shared, multipleParents, email, total) {
 
   // Apply the colour to the current folder
   const id = folder.id;
@@ -88,9 +88,9 @@ function updateFolderColour(folder, colour, shared, multipleParents, total) {
   // Search for the children
   let params;
   if (shared === "no" || shared === "me") {
-    params = {"maxResults": 1000, "orderBy": "title", "q": `mimeType = 'application/vnd.google-apps.folder' and '${id}' in parents and '${Session.getActiveUser().getEmail()}' in owners`};
+    params = {"maxResults": 1000, "orderBy": "title", "q": `mimeType = 'application/vnd.google-apps.folder' and '${id}' in parents and '${email}' in owners`};
   } else {
-    params = {"maxResults": 1000, "orderBy": "title", "q": `mimeType = 'application/vnd.google-apps.folder' and ${id} in parents`};
+    params = {"maxResults": 1000, "orderBy": "title", "q": `mimeType = 'application/vnd.google-apps.folder' and '${id}' in parents`};
   }
   const children = Drive.Files.list(params);
 
@@ -109,7 +109,7 @@ function updateFolderColour(folder, colour, shared, multipleParents, total) {
 
       // If the user only wants to update shared folder they own then skip those that aren't owned by them
     } else if (shared === "me") {
-      if (child.owners[0].emailAddress !== Session.getActiveUser().getEmail()) {
+      if (child.owners[0].emailAddress !== email) {
         Logger.log(`Skipped ${child.title} because it's owned by someone else.`);
         continue;
       }
@@ -124,11 +124,10 @@ function updateFolderColour(folder, colour, shared, multipleParents, total) {
     }
 
     // Run the function recursively
-    total = updateFolderColour(child, colour, shared, multipleParents, total);
+    total = updateFolderColour(child, colour, shared, multipleParents, email, total);
 
   }
 
-  Logger.log(`New total is ${total}`)
   return total + children.items.length
 
 }
