@@ -1,0 +1,40 @@
+{
+  "timeZone": "Europe/London",
+  "dependencies": {
+    "enabledAdvancedServices": [
+      {
+        "userSymbol": "Drive",
+        "serviceId": "drive",
+        "version": "v2"
+      }
+    ]
+  },
+  "exceptionLogging": "STACKDRIVER",
+  "oauthScopes": [
+    "https://www.googleapis.com/auth/drive.file",
+    "https://www.googleapis.com/auth/drive.addons.metadata.readonly",
+    "https://www.googleapis.com/auth/drive.metadata"
+  ],
+  "runtimeVersion": "V8",
+  "addOns": {
+    "common": {
+      "name": "Subfolder Colours",
+      "logoUrl": "https://raw.githubusercontent.com/cmenon12/drive-subfolder-colours/main/assets/logo.png",
+      "layoutProperties": {
+        "primaryColor": "#E8EDEE",
+        "secondaryColor": "#1A227E"
+      },
+      "openLinkUrlPrefixes": []
+    },
+    "drive": {
+      "homepageTrigger": {
+        "runFunction": "buildDriveHomePage",
+        "enabled": true
+      },
+      "onItemsSelectedTrigger": {
+        "runFunction": "buildDriveHomePage"
+      }
+    }
+  },
+  "urlFetchWhitelist": []
+}
