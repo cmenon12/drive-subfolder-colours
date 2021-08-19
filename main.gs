@@ -9,11 +9,11 @@
 
 
 /**
- * Fetches the allowed folder colours.
+ * Returns the allowed folder colours.
  * 
  * @returns {Object} the colours in name:hex pairs
  */
-function fetchAllFolderColours() {
+function getAllFolderColours() {
 
   const colours = {
     "Brown": "#ac725e", //
@@ -55,8 +55,62 @@ function fetchAllFolderColours() {
  */
 function processDriveSidebarForm(e) {
 
-  const currentFolder = e.drive.activeCursorItem;
+  const item = e.drive.activeCursorItem;
+
+  Logger.log(JSON.stringify(e))
+  Logger.log(JSON.stringify(item))
+
+  const folder = DriveApp.getFolderById(item.id);
+
+  Logger.log(JSON.stringify(folder.getSharingAccess()))
+  Logger.log(JSON.stringify(folder.getEditors()))
+  Logger.log(JSON.stringify(folder.getViewers()))
+  Logger.log(JSON.stringify(folder.getOwner()))
+  Logger.log(JSON.stringify(Session.getActiveUser().getEmail()))
+
+
 
   return buildDriveHomePage(e);
+
+}
+
+
+/**
+ * Update the colour of the folder, and all child folders.
+ * 
+ * @param {DriveApp.Folder} folder the folder to update
+ * @param {String} colour the hex colour to set
+ * @param {String} shared 'no', 'me', or 'all'
+ * @param {String} multipleParents 'yes' or 'no'
+ */
+function updateFolderColour(folder, colour, shared, multipleParents) {
+
+  // Apply the colour to the current folder
+  const id = folder.getId();
+  const newFolder = Drive.newFile()
+  newFolder.folderColorRgb = colour
+  Drive.Files.patch(newFolder, id)
+
+  let child;
+  const children = DriveApp.getFolders();
+  while (children.hasNext()) {
+    child = children.next();
+
+    if (shared === "no") {
+      if (child.getSharingAccess() !== DriveApp.Access.PRIVATE || child.getEditors().length > 0 || child.getViewers().length > 0) {
+        continue;
+      }
+    } else if (shared === "me") {
+      if (child.getOwner().getEmail() !== Session.getActiveUser().getEmail()) {
+        continue;
+      }
+    }
+
+    if (multipleParents === "no") {
+      // check that it only has one parent
+    }
+
+    Logger.log(folder.getName());
+  }
 
 }
