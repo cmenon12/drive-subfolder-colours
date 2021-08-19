@@ -56,19 +56,12 @@ function getAllFolderColours() {
 function processDriveSidebarForm(e) {
 
   const item = e.drive.activeCursorItem;
+  const folder = Drive.Files.get(item.id);
+  const colourName = Object.keys(getAllFolderColours()).find(colourName => getAllFolderColours()[colourName] === e.formInput.colour);
 
-  Logger.log(JSON.stringify(e))
-  Logger.log(JSON.stringify(item))
+  Logger.log(`All subfolders of ${folder.title} will be updated to ${colourName}`)
 
-  const folder = DriveApp.getFolderById(item.id);
-
-  Logger.log(JSON.stringify(folder.getSharingAccess()))
-  Logger.log(JSON.stringify(folder.getEditors()))
-  Logger.log(JSON.stringify(folder.getViewers()))
-  Logger.log(JSON.stringify(folder.getOwner()))
-  Logger.log(JSON.stringify(Session.getActiveUser().getEmail()))
-
-
+  updateFolderColour(folder, e.formInput.colour, e.formInput.shared, e.formInput.multipleParents);
 
   return buildDriveHomePage(e);
 
@@ -78,7 +71,7 @@ function processDriveSidebarForm(e) {
 /**
  * Update the colour of the folder, and all child folders.
  * 
- * @param {DriveApp.Folder} folder the folder to update
+ * @param {Object} folder the folder to update
  * @param {String} colour the hex colour to set
  * @param {String} shared 'no', 'me', or 'all'
  * @param {String} multipleParents 'yes' or 'no'
@@ -86,31 +79,48 @@ function processDriveSidebarForm(e) {
 function updateFolderColour(folder, colour, shared, multipleParents) {
 
   // Apply the colour to the current folder
-  const id = folder.getId();
-  const newFolder = Drive.newFile()
-  newFolder.folderColorRgb = colour
-  Drive.Files.patch(newFolder, id)
+  const id = folder.id;
+  const newFolder = Drive.newFile();
+  newFolder.folderColorRgb = colour;
+  Drive.Files.patch(newFolder, id);
+  Logger.log(`Updated ${folder.title}`);
 
-  let child;
-  const children = DriveApp.getFolders();
-  while (children.hasNext()) {
-    child = children.next();
+  // Iterate through the children
+  const params = { "newRevision": true, "pinned": true };
+  const children = Drive.Children.list(id, params)
+  for (const child in children.items) {
 
+    // Get the item and skip if it's not a folder
+    const childFolder = Drive.Files.get(child.id);
+    if (childFolder.mimeType !== "application/vnd.google-apps.folder") {
+      continue;
+    }
+
+    // If the user doesn't want to update shared folders then skip if shared
     if (shared === "no") {
-      if (child.getSharingAccess() !== DriveApp.Access.PRIVATE || child.getEditors().length > 0 || child.getViewers().length > 0) {
+      if (childFolder.shared === true) {
+        Logger.log(`Skipped ${childFolder.title} because it's shared.`);
         continue;
       }
+
+      // If the user only wants to update shared folder they own then skip those that aren't owned by them
     } else if (shared === "me") {
-      if (child.getOwner().getEmail() !== Session.getActiveUser().getEmail()) {
+      if (childFolder.owners[0].emailAddress !== Session.getActiveUser().getEmail()) {
+        Logger.log(`Skipped ${childFolder.title} because it's owned by someone else.`);
         continue;
       }
     }
 
+    // If the user doesn't want to update folders with multiple parents then skip them
     if (multipleParents === "no") {
-      // check that it only has one parent
+      if (childFolder.parents.length > 1) {
+        Logger.log(`Skipped ${childFolder.title} because it has multiple parents.`);
+        continue;
+      }
     }
 
-    Logger.log(folder.getName());
+    // Run the function recursively
+    updateFolderColour(childFolder, colour, shared, multipleParents);
   }
 
 }
