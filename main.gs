@@ -16,30 +16,30 @@
 function getAllFolderColours() {
 
   const colours = {
-    "Brown": "#ac725e", //
-    "Red, brick": "#d06b64",
-    "Red, bright": "#f83a22",
-    "Orange, dark": "#fa573c",
-    "Orange": "#ff7537",
-    "Yellow, dark": "#ffad46",
-    "Green": "#42d692",//
-    "Green, dark": "#16a765",
-    "Lime": "#7bd148",
-    "Lime, pale": "#b3dc6c",
-    "Yellow, light": "#fbe983",
-    "Yellow": "#fad165",
-    "Green, light": "#92e1c0", //
-    "Turquoise, light": "#9fe1e7",
-    "Blue, light": "#9fc6e7",
-    "Blue": "#4986e7",
-    "Blue, pale": "#9a9cff",
-    "Violet, light": "#b99aff",
-    "Grey, dark (default)": "#8f8f8f", //
-    "Grey, pale": "#cabdbf",
-    "Brown, light": "#cca6ac",
-    "Pink": "#f691b2",
-    "Purple": "#cd74e6",
-    "Violet": "#a47ae2"
+    "Brown": { "hex": "#ac725e", "icon": "https://raw.githubusercontent.com/cmenon12/drive-subfolder-colours/main/assets/icons/folder25.png" }, //
+    "Red, brick": { "hex": "#d06b64", "icon": "https://raw.githubusercontent.com/cmenon12/drive-subfolder-colours/main/assets/icons/folder26.png" },
+    "Red, bright": { "hex": "#f83a22", "icon": "https://raw.githubusercontent.com/cmenon12/drive-subfolder-colours/main/assets/icons/folder27.png" },
+    "Orange, dark": { "hex": "#fa573c", "icon": "https://raw.githubusercontent.com/cmenon12/drive-subfolder-colours/main/assets/icons/folder28.png" },
+    "Orange": { "hex": "#ff7537", "icon": "https://raw.githubusercontent.com/cmenon12/drive-subfolder-colours/main/assets/icons/folder29.png" },
+    "Yellow, dark": { "hex": "#ffad46", "icon": "https://raw.githubusercontent.com/cmenon12/drive-subfolder-colours/main/assets/icons/folder30.png" },
+    "Green": { "hex": "#42d692", "icon": "https://raw.githubusercontent.com/cmenon12/drive-subfolder-colours/main/assets/icons/folder36.png" },//
+    "Green, dark": { "hex": "#16a765", "icon": "https://raw.githubusercontent.com/cmenon12/drive-subfolder-colours/main/assets/icons/folder35.png" },
+    "Lime": { "hex": "#7bd148", "icon": "https://raw.githubusercontent.com/cmenon12/drive-subfolder-colours/main/assets/icons/folder34.png" },
+    "Lime, pale": { "hex": "#b3dc6c", "icon": "https://raw.githubusercontent.com/cmenon12/drive-subfolder-colours/main/assets/icons/folder33.png" },
+    "Yellow, light": { "hex": "#fbe983", "icon": "https://raw.githubusercontent.com/cmenon12/drive-subfolder-colours/main/assets/icons/folder32.png" },
+    "Yellow": { "hex": "#fad165", "icon": "https://raw.githubusercontent.com/cmenon12/drive-subfolder-colours/main/assets/icons/folder31.png" },
+    "Green, light": { "hex": "#92e1c0", "icon": "https://raw.githubusercontent.com/cmenon12/drive-subfolder-colours/main/assets/icons/folder37.png" }, //
+    "Turquoise, light": { "hex": "#9fe1e7", "icon": "https://raw.githubusercontent.com/cmenon12/drive-subfolder-colours/main/assets/icons/folder38.png" },
+    "Blue, light": { "hex": "#9fc6e7", "icon": "https://raw.githubusercontent.com/cmenon12/drive-subfolder-colours/main/assets/icons/folder39.png" },
+    "Blue": { "hex": "#4986e7", "icon": "https://raw.githubusercontent.com/cmenon12/drive-subfolder-colours/main/assets/icons/folder40.png" },
+    "Blue, pale": { "hex": "#9a9cff", "icon": "https://raw.githubusercontent.com/cmenon12/drive-subfolder-colours/main/assets/icons/folder41.png" },
+    "Violet, light": { "hex": "#b99aff", "icon": "https://raw.githubusercontent.com/cmenon12/drive-subfolder-colours/main/assets/icons/folder42.png" },
+    "Grey, dark (default)": { "hex": "#8f8f8f", "icon": "https://raw.githubusercontent.com/cmenon12/drive-subfolder-colours/main/assets/icons/folder48.png" }, //
+    "Grey, pale": { "hex": "#cabdbf", "icon": "https://raw.githubusercontent.com/cmenon12/drive-subfolder-colours/main/assets/icons/folder47.png" },
+    "Brown, light": { "hex": "#cca6ac", "icon": "https://raw.githubusercontent.com/cmenon12/drive-subfolder-colours/main/assets/icons/folder46.png" },
+    "Pink": { "hex": "#f691b2", "icon": "https://raw.githubusercontent.com/cmenon12/drive-subfolder-colours/main/assets/icons/folder45.png" },
+    "Purple": { "hex": "#cd74e6", "icon": "https://raw.githubusercontent.com/cmenon12/drive-subfolder-colours/main/assets/icons/folder44.png" },
+    "Violet": { "hex": "#a47ae2", "icon": "https://raw.githubusercontent.com/cmenon12/drive-subfolder-colours/main/assets/icons/folder43.png" }
   };
 
   return colours
@@ -57,7 +57,7 @@ function processDriveSidebarForm(e) {
 
   const item = e.drive.activeCursorItem;
   const folder = Drive.Files.get(item.id);
-  const colourName = Object.keys(getAllFolderColours()).find(colourName => getAllFolderColours()[colourName] === e.formInput.colour);
+  const colourName = Object.keys(getAllFolderColours()).find(colourName => getAllFolderColours()[colourName].hex === e.formInput.colour);
 
   Logger.log(`All subfolders of ${folder.title} will be updated to ${colourName}`)
 
@@ -88,15 +88,15 @@ function updateFolderColour(folder, colour, shared, multipleParents, email, tota
   // Search for the children
   let params;
   if (shared === "no" || shared === "me") {
-    params = {"maxResults": 1000, "orderBy": "title", "q": `mimeType = 'application/vnd.google-apps.folder' and '${id}' in parents and '${email}' in owners`};
+    params = { "maxResults": 1000, "orderBy": "title", "q": `mimeType = 'application/vnd.google-apps.folder' and '${id}' in parents and '${email}' in owners` };
   } else {
-    params = {"maxResults": 1000, "orderBy": "title", "q": `mimeType = 'application/vnd.google-apps.folder' and '${id}' in parents`};
+    params = { "maxResults": 1000, "orderBy": "title", "q": `mimeType = 'application/vnd.google-apps.folder' and '${id}' in parents` };
   }
   const children = Drive.Files.list(params);
 
   // Iterate through the children
   let child;
-  for (let i = 0; i<children.items.length; i++) {
+  for (let i = 0; i < children.items.length; i++) {
 
     child = children.items[i];
 
