@@ -39,9 +39,23 @@ function buildDriveHomePage(e) {
 
   }
 
-  const currentFolder = e.drive.activeCursorItem;
-
   card.addSection(getFormSection());
+  card.addSection(getConfirmationSection(e));
+
+  return card.build();
+
+}
+
+
+/**
+ * Build and return the section to confirm the user's choice with buttons.
+ *
+ * @param {eventObject} e The event object
+ * @returns {CardSection} A section with the login form.
+ */
+function getConfirmationSection(e) {
+
+  const currentFolder = e.drive.activeCursorItem;
 
   const buttons = CardService.newButtonSet();
   buttons.addButton(CardService.newTextButton()
@@ -60,14 +74,11 @@ function buildDriveHomePage(e) {
     .addWidget(folder)
     .addWidget(buttons))
 
-  return card.build();
-
 }
 
 
 /**
  * Build and return the section with the login form.
- * This will ensure that any undefined (or unsaved) form inputs are replaced with empty strings.
  *
  * @returns {CardSection} A section with the login form.
  */
@@ -85,9 +96,9 @@ function getFormSection() {
   const colours = getAllFolderColours()
   for (const property in colours) {
     if (property.includes("default")) {
-      colour.addItem(property, colours[property], true);
+      colour.addItem(property, colours[property].hex, true);
     } else {
-      colour.addItem(property, colours[property], false);
+      colour.addItem(property, colours[property].hex, false);
     }
   }
 
