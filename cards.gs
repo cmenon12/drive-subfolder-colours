@@ -48,6 +48,20 @@ function buildDriveHomePage(e) {
 
 
 /**
+ * Does an in-place update of the drive homepage.
+ *
+ * @param {eventObject} e The event object
+ * @returns {Card} The homepage Card
+ */
+function updateDriveHomePage(e) {
+  return CardService.newActionResponseBuilder()
+    .setNavigation(CardService.newNavigation()
+      .updateCard(buildDriveHomePage(e)))
+    .build();
+}
+
+
+/**
  * Build and return the section to confirm the user's choice with buttons.
  *
  * @param {eventObject} e The event object
@@ -57,8 +71,6 @@ function getConfirmationSection(e) {
 
   const currentFolder = e.drive.activeCursorItem;
   const section = CardService.newCardSection();
-
-  getCurrentFolderColourName(e);
 
   // Create the submit button
   const buttons = CardService.newButtonSet();
@@ -95,7 +107,9 @@ function getFormSection() {
   const colour = CardService.newSelectionInput()
     .setType(CardService.SelectionInputType.DROPDOWN)
     .setFieldName("colour")
-    .setTitle("Colour");
+    .setTitle("Colour")
+    .setOnChangeAction(CardService.newAction()
+      .setFunctionName("updateDriveHomePage"));
 
   // Add the colours
   const colours = getAllFolderColours()
