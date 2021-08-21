@@ -8,6 +8,14 @@
  */
 
 
+// Declare global variables for execution time limit (40s)
+var MAX_EXECUTION_TIME = 40000
+var NOW;
+var isTimeLeft = () => {
+return MAX_EXECUTION_TIME > Date.now() - NOW;
+};
+
+
 /**
  * Returns the allowed folder colours.
  * 
@@ -48,6 +56,25 @@ function getAllFolderColours() {
 
 
 /**
+ * Get the colour of the folder in the event object
+ * 
+ * @param {eventObject} e The event object
+ * @returns {Object} the colour object
+ */
+function getCurrentFolderColour(e) {
+
+  const item = e.drive.activeCursorItem;
+  const folder = Drive.Files.get(item.id);
+  const colourName = Object.keys(getAllFolderColours()).find(colourName => getAllFolderColours()[colourName].hex === folder.folderColorRgb);
+
+  Logger.log(colourName);
+  return getAllFolderColours()[colourName]
+
+
+}
+
+
+/**
  * Processes the form submission from the Drive sidebar.
  *
  * @param {eventObject} e The event object
@@ -60,6 +87,9 @@ function processDriveSidebarForm(e) {
   const colourName = Object.keys(getAllFolderColours()).find(colourName => getAllFolderColours()[colourName].hex === e.formInput.colour);
 
   Logger.log(`All subfolders of ${folder.title} will be updated to ${colourName}`)
+
+  // Start the execution timer
+  NOW = Date.now();
 
   const result = updateFolderColour(folder, e.formInput.colour, e.formInput.shared, e.formInput.multipleParents, Session.getActiveUser().getEmail(), 0);
   Logger.log(`We updated ${result} folders.`)
@@ -97,6 +127,11 @@ function updateFolderColour(folder, colour, shared, multipleParents, email, tota
   // Iterate through the children
   let child;
   for (let i = 0; i < children.items.length; i++) {
+
+    if (!isTimeLeft()) {
+      Logger.log("forced to break")
+      return total + i;
+    }
 
     child = children.items[i];
 
