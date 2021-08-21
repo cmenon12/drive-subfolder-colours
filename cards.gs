@@ -39,7 +39,7 @@ function buildDriveHomePage(e) {
 
   }
 
-  card.addSection(getFormSection());
+  card.addSection(getFormSection(e));
   card.addSection(getConfirmationSection(e));
 
   return card.build();
@@ -80,10 +80,18 @@ function getConfirmationSection(e) {
       .setFunctionName("processDriveSidebarForm"))
     .setTextButtonStyle(CardService.TextButtonStyle.FILLED))
 
+  // Detect if the user specified a new colour
+  let iconUrl;
+  if (e.formInput === undefined) {
+    iconUrl = currentFolder.iconUrl;
+  } else {
+    iconUrl = getAllFolderColours()[e.formInput.colour].icon;
+  }
+
   // Tell the user which folder will be updated
   const folder = CardService.newKeyValue()
     .setContent(currentFolder.title)
-    .setIconUrl(currentFolder.iconUrl)
+    .setIconUrl(iconUrl)
     .setTopLabel("This folder and subfolders will be updated.");
 
   section.addWidget(folder)
@@ -97,11 +105,24 @@ function getConfirmationSection(e) {
 /**
  * Build and return the section with the login form.
  *
+ * @param {eventObject} e The event object
  * @returns {CardSection} A section with the login form.
  */
-function getFormSection() {
+function getFormSection(e) {
 
   const section = CardService.newCardSection();
+
+  // Detect if the user already filled it out
+  let currentColour;
+  let currentShared;
+  let currentMultipleParents;
+  if (e.formInput === undefined) {
+    currentColour = getCurrentFolderColourName(e)
+  } else {
+    currentColour = e.formInput.colour;
+    currentShared = e.formInput.shared;
+    currentMultipleParents = e.formInput.multipleParents
+  }
 
   // Create the colour dropdown
   const colour = CardService.newSelectionInput()
@@ -111,11 +132,16 @@ function getFormSection() {
     .setOnChangeAction(CardService.newAction()
       .setFunctionName("updateDriveHomePage"));
 
-  // Add the colours
+  // Add the colours, with the current as default
   const colours = getAllFolderColours()
   for (const property in colours) {
-    if (property.includes("default")) {
-      colour.addItem(property, property, true);
+    if (property === currentColour) {
+      if (property.includes("default")) {
+        const propName = property.replace("(default)", "(current, default)");
+        colour.addItem(propName, property, true);
+      } else {
+        colour.addItem(`${property} (current)`, property, true);
+      }
     } else {
       colour.addItem(property, property, false);
     }
@@ -126,17 +152,34 @@ function getFormSection() {
     .setType(CardService.SelectionInputType.RADIO_BUTTON)
     .setFieldName("shared")
     .setTitle("Include shared folders?")
-    .addItem("Do not include shared folders", "no", false)
-    .addItem("Only include shared folders owned by me", "me", false)
-    .addItem("Include all shared folders", "all", false);
+
+  // Add the items to shared
+  const sharedItems = [["Do not include shared folders", "no"],
+    ["Only include shared folders owned by me", "me"],
+    ["Include all shared folders", "all"]];
+  sharedItems.forEach(item => {
+    if (item[1] === currentShared) {
+      shared.addItem(item[0], item[1], true);
+    } else {
+      shared.addItem(item[0], item[1], false);
+    }
+  });
 
   // Create the multiple parents radio buttons
   const multipleParents = CardService.newSelectionInput()
     .setType(CardService.SelectionInputType.RADIO_BUTTON)
     .setFieldName("multipleParents")
     .setTitle("Include folders with multiple parents?")
-    .addItem("Yes", "yes", false)
-    .addItem("No", "no", false);
+
+  // Add the items to multiple parents
+  const multipleParentsItems = [["Yes", "yes"], ["No", "no"]];
+  multipleParentsItems.forEach(item => {
+    if (item[1] === currentMultipleParents) {
+      multipleParents.addItem(item[0], item[1], true);
+    } else {
+      multipleParents.addItem(item[0], item[1], false);
+    }
+  })
 
   section.addWidget(colour)
     .addWidget(shared)
