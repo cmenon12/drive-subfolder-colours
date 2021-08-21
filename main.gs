@@ -18,36 +18,108 @@ return MAX_EXECUTION_TIME > Date.now() - NOW;
 
 /**
  * Returns the allowed folder colours.
- * 
+ *
  * @returns {Object} the colours in name:hex pairs
  */
 function getAllFolderColours() {
 
   const colours = {
-    "Brown": { "hex": "#ac725e", "icon": "https://raw.githubusercontent.com/cmenon12/drive-subfolder-colours/main/assets/icons/folder25.png" }, //
-    "Red, brick": { "hex": "#d06b64", "icon": "https://raw.githubusercontent.com/cmenon12/drive-subfolder-colours/main/assets/icons/folder26.png" },
-    "Red, bright": { "hex": "#f83a22", "icon": "https://raw.githubusercontent.com/cmenon12/drive-subfolder-colours/main/assets/icons/folder27.png" },
-    "Orange, dark": { "hex": "#fa573c", "icon": "https://raw.githubusercontent.com/cmenon12/drive-subfolder-colours/main/assets/icons/folder28.png" },
-    "Orange": { "hex": "#ff7537", "icon": "https://raw.githubusercontent.com/cmenon12/drive-subfolder-colours/main/assets/icons/folder29.png" },
-    "Yellow, dark": { "hex": "#ffad46", "icon": "https://raw.githubusercontent.com/cmenon12/drive-subfolder-colours/main/assets/icons/folder30.png" },
-    "Green": { "hex": "#42d692", "icon": "https://raw.githubusercontent.com/cmenon12/drive-subfolder-colours/main/assets/icons/folder36.png" },//
-    "Green, dark": { "hex": "#16a765", "icon": "https://raw.githubusercontent.com/cmenon12/drive-subfolder-colours/main/assets/icons/folder35.png" },
-    "Lime": { "hex": "#7bd148", "icon": "https://raw.githubusercontent.com/cmenon12/drive-subfolder-colours/main/assets/icons/folder34.png" },
-    "Lime, pale": { "hex": "#b3dc6c", "icon": "https://raw.githubusercontent.com/cmenon12/drive-subfolder-colours/main/assets/icons/folder33.png" },
-    "Yellow, light": { "hex": "#fbe983", "icon": "https://raw.githubusercontent.com/cmenon12/drive-subfolder-colours/main/assets/icons/folder32.png" },
-    "Yellow": { "hex": "#fad165", "icon": "https://raw.githubusercontent.com/cmenon12/drive-subfolder-colours/main/assets/icons/folder31.png" },
-    "Green, light": { "hex": "#92e1c0", "icon": "https://raw.githubusercontent.com/cmenon12/drive-subfolder-colours/main/assets/icons/folder37.png" }, //
-    "Turquoise, light": { "hex": "#9fe1e7", "icon": "https://raw.githubusercontent.com/cmenon12/drive-subfolder-colours/main/assets/icons/folder38.png" },
-    "Blue, light": { "hex": "#9fc6e7", "icon": "https://raw.githubusercontent.com/cmenon12/drive-subfolder-colours/main/assets/icons/folder39.png" },
-    "Blue": { "hex": "#4986e7", "icon": "https://raw.githubusercontent.com/cmenon12/drive-subfolder-colours/main/assets/icons/folder40.png" },
-    "Blue, pale": { "hex": "#9a9cff", "icon": "https://raw.githubusercontent.com/cmenon12/drive-subfolder-colours/main/assets/icons/folder41.png" },
-    "Violet, light": { "hex": "#b99aff", "icon": "https://raw.githubusercontent.com/cmenon12/drive-subfolder-colours/main/assets/icons/folder42.png" },
-    "Grey, dark (default)": { "hex": "#8f8f8f", "icon": "https://raw.githubusercontent.com/cmenon12/drive-subfolder-colours/main/assets/icons/folder48.png" }, //
-    "Grey, pale": { "hex": "#cabdbf", "icon": "https://raw.githubusercontent.com/cmenon12/drive-subfolder-colours/main/assets/icons/folder47.png" },
-    "Brown, light": { "hex": "#cca6ac", "icon": "https://raw.githubusercontent.com/cmenon12/drive-subfolder-colours/main/assets/icons/folder46.png" },
-    "Pink": { "hex": "#f691b2", "icon": "https://raw.githubusercontent.com/cmenon12/drive-subfolder-colours/main/assets/icons/folder45.png" },
-    "Purple": { "hex": "#cd74e6", "icon": "https://raw.githubusercontent.com/cmenon12/drive-subfolder-colours/main/assets/icons/folder44.png" },
-    "Violet": { "hex": "#a47ae2", "icon": "https://raw.githubusercontent.com/cmenon12/drive-subfolder-colours/main/assets/icons/folder43.png" }
+    "Brown": {
+      "hex": "#ac725e",
+      "icon": "https://drive-thirdparty.googleusercontent.com/64/type/application/vnd.google-apps.folder+25"
+    }, //
+    "Red, brick": {
+      "hex": "#d06b64",
+      "icon": "https://drive-thirdparty.googleusercontent.com/64/type/application/vnd.google-apps.folder+26"
+    },
+    "Red, bright": {
+      "hex": "#f83a22",
+      "icon": "https://drive-thirdparty.googleusercontent.com/64/type/application/vnd.google-apps.folder+27"
+    },
+    "Orange, dark": {
+      "hex": "#fa573c",
+      "icon": "https://drive-thirdparty.googleusercontent.com/64/type/application/vnd.google-apps.folder+28"
+    },
+    "Orange": {
+      "hex": "#ff7537",
+      "icon": "https://drive-thirdparty.googleusercontent.com/64/type/application/vnd.google-apps.folder+29"
+    },
+    "Yellow, dark": {
+      "hex": "#ffad46",
+      "icon": "https://drive-thirdparty.googleusercontent.com/64/type/application/vnd.google-apps.folder+30"
+    },
+    "Green": {
+      "hex": "#42d692",
+      "icon": "https://drive-thirdparty.googleusercontent.com/64/type/application/vnd.google-apps.folder+36"
+    },//
+    "Green, dark": {
+      "hex": "#16a765",
+      "icon": "https://drive-thirdparty.googleusercontent.com/64/type/application/vnd.google-apps.folder+35"
+    },
+    "Lime": {
+      "hex": "#7bd148",
+      "icon": "https://drive-thirdparty.googleusercontent.com/64/type/application/vnd.google-apps.folder+34"
+    },
+    "Lime, pale": {
+      "hex": "#b3dc6c",
+      "icon": "https://drive-thirdparty.googleusercontent.com/64/type/application/vnd.google-apps.folder+33"
+    },
+    "Yellow, light": {
+      "hex": "#fbe983",
+      "icon": "https://drive-thirdparty.googleusercontent.com/64/type/application/vnd.google-apps.folder+32"
+    },
+    "Yellow": {
+      "hex": "#fad165",
+      "icon": "https://drive-thirdparty.googleusercontent.com/64/type/application/vnd.google-apps.folder+31"
+    },
+    "Green, light": {
+      "hex": "#92e1c0",
+      "icon": "https://drive-thirdparty.googleusercontent.com/64/type/application/vnd.google-apps.folder+37"
+    }, //
+    "Turquoise, light": {
+      "hex": "#9fe1e7",
+      "icon": "https://drive-thirdparty.googleusercontent.com/64/type/application/vnd.google-apps.folder+38"
+    },
+    "Blue, light": {
+      "hex": "#9fc6e7",
+      "icon": "https://drive-thirdparty.googleusercontent.com/64/type/application/vnd.google-apps.folder+39"
+    },
+    "Blue": {
+      "hex": "#4986e7",
+      "icon": "https://drive-thirdparty.googleusercontent.com/64/type/application/vnd.google-apps.folder+40"
+    },
+    "Blue, pale": {
+      "hex": "#9a9cff",
+      "icon": "https://drive-thirdparty.googleusercontent.com/64/type/application/vnd.google-apps.folder+41"
+    },
+    "Violet, light": {
+      "hex": "#b99aff",
+      "icon": "https://drive-thirdparty.googleusercontent.com/64/type/application/vnd.google-apps.folder+42"
+    },
+    "Grey, dark (default)": {
+      "hex": "#8f8f8f",
+      "icon": "https://drive-thirdparty.googleusercontent.com/64/type/application/vnd.google-apps.folder"
+    }, //
+    "Grey, pale": {
+      "hex": "#cabdbf",
+      "icon": "https://drive-thirdparty.googleusercontent.com/64/type/application/vnd.google-apps.folder+47"
+    },
+    "Brown, light": {
+      "hex": "#cca6ac",
+      "icon": "https://drive-thirdparty.googleusercontent.com/64/type/application/vnd.google-apps.folder+46"
+    },
+    "Pink": {
+      "hex": "#f691b2",
+      "icon": "https://drive-thirdparty.googleusercontent.com/64/type/application/vnd.google-apps.folder+45"
+    },
+    "Purple": {
+      "hex": "#cd74e6",
+      "icon": "https://drive-thirdparty.googleusercontent.com/64/type/application/vnd.google-apps.folder+44"
+    },
+    "Violet": {
+      "hex": "#a47ae2",
+      "icon": "https://drive-thirdparty.googleusercontent.com/64/type/application/vnd.google-apps.folder+43"
+    }
   };
 
   return colours
