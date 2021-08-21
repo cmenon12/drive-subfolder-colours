@@ -12,7 +12,7 @@
 var MAX_EXECUTION_TIME = 40000
 var NOW;
 var isTimeLeft = () => {
-return MAX_EXECUTION_TIME > Date.now() - NOW;
+  return MAX_EXECUTION_TIME > Date.now() - NOW;
 };
 
 
@@ -129,18 +129,17 @@ function getAllFolderColours() {
 
 /**
  * Get the colour of the folder in the event object
- * 
+ *
  * @param {eventObject} e The event object
- * @returns {Object} the colour object
+ * @returns {Object} the colour name
  */
-function getCurrentFolderColour(e) {
+function getCurrentFolderColourName(e) {
 
   const item = e.drive.activeCursorItem;
   const folder = Drive.Files.get(item.id);
-  const colourName = Object.keys(getAllFolderColours()).find(colourName => getAllFolderColours()[colourName].hex === folder.folderColorRgb);
-
-  Logger.log(colourName);
-  return getAllFolderColours()[colourName]
+  const iconLinkLarge = folder.iconLink.replace("/16/", "/64/");
+  const colourName = Object.keys(getAllFolderColours()).find(colourName => getAllFolderColours()[colourName].icon === iconLinkLarge);
+  return colourName;
 
 
 }
@@ -156,14 +155,14 @@ function processDriveSidebarForm(e) {
 
   const item = e.drive.activeCursorItem;
   const folder = Drive.Files.get(item.id);
-  const colourName = Object.keys(getAllFolderColours()).find(colourName => getAllFolderColours()[colourName].hex === e.formInput.colour);
+  const colourName = e.formInput.colour;
 
   Logger.log(`All subfolders of ${folder.title} will be updated to ${colourName}`)
 
   // Start the execution timer
   NOW = Date.now();
 
-  const result = updateFolderColour(folder, e.formInput.colour, e.formInput.shared, e.formInput.multipleParents, Session.getActiveUser().getEmail(), 0);
+  const result = updateFolderColour(folder, getAllFolderColours()[colourName].hex, e.formInput.shared, e.formInput.multipleParents, Session.getActiveUser().getEmail(), 0);
   Logger.log(`We updated ${result} folders.`)
 
   return buildDriveHomePage(e);
@@ -173,11 +172,14 @@ function processDriveSidebarForm(e) {
 
 /**
  * Update the colour of the folder, and all child folders.
- * 
+ *
  * @param {Object} folder the folder item to update
  * @param {String} colour the hex colour to set
  * @param {String} shared 'no', 'me', or 'all'
  * @param {String} multipleParents 'yes' or 'no'
+ * @param {String} email the email address of the current user
+ * @param {Number} total the running total of updated folders
+ * @returns {Number} the updated total
  */
 function updateFolderColour(folder, colour, shared, multipleParents, email, total) {
 
@@ -190,9 +192,17 @@ function updateFolderColour(folder, colour, shared, multipleParents, email, tota
   // Search for the children
   let params;
   if (shared === "no" || shared === "me") {
-    params = { "maxResults": 1000, "orderBy": "title", "q": `mimeType = 'application/vnd.google-apps.folder' and '${id}' in parents and '${email}' in owners` };
+    params = {
+      "maxResults": 1000,
+      "orderBy": "title",
+      "q": `mimeType = 'application/vnd.google-apps.folder' and '${id}' in parents and '${email}' in owners`
+    };
   } else {
-    params = { "maxResults": 1000, "orderBy": "title", "q": `mimeType = 'application/vnd.google-apps.folder' and '${id}' in parents` };
+    params = {
+      "maxResults": 1000,
+      "orderBy": "title",
+      "q": `mimeType = 'application/vnd.google-apps.folder' and '${id}' in parents`
+    };
   }
   const children = Drive.Files.list(params);
 

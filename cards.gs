@@ -10,7 +10,7 @@
 
 /**
  * Builds the homepage Card specifically for Drive.
- * If the user has selected a folder they'll be prompted to 
+ * If the user has selected a folder they'll be prompted to
  * change the colour. Otherwise they'll be asked to select one.
  *
  * @param {eventObject} e The event object
@@ -56,7 +56,11 @@ function buildDriveHomePage(e) {
 function getConfirmationSection(e) {
 
   const currentFolder = e.drive.activeCursorItem;
+  const section = CardService.newCardSection();
 
+  getCurrentFolderColourName(e);
+
+  // Create the submit button
   const buttons = CardService.newButtonSet();
   buttons.addButton(CardService.newTextButton()
     .setText("UPDATE")
@@ -64,15 +68,16 @@ function getConfirmationSection(e) {
       .setFunctionName("processDriveSidebarForm"))
     .setTextButtonStyle(CardService.TextButtonStyle.FILLED))
 
-  // Tell the user that it'll be saved to the folder
+  // Tell the user which folder will be updated
   const folder = CardService.newKeyValue()
     .setContent(currentFolder.title)
     .setIconUrl(currentFolder.iconUrl)
     .setTopLabel("This folder and subfolders will be updated.");
 
-  card.addSection(CardService.newCardSection()
-    .addWidget(folder)
-    .addWidget(buttons))
+  section.addWidget(folder)
+    .addWidget(buttons);
+
+  return section;
 
 }
 
@@ -96,9 +101,9 @@ function getFormSection() {
   const colours = getAllFolderColours()
   for (const property in colours) {
     if (property.includes("default")) {
-      colour.addItem(property, colours[property].hex, true);
+      colour.addItem(property, property, true);
     } else {
-      colour.addItem(property, colours[property].hex, false);
+      colour.addItem(property, property, false);
     }
   }
 
