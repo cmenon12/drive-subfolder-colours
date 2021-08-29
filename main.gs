@@ -187,7 +187,7 @@ function processDriveSidebarForm(e) {
  * @param {Object} folder the folder item to update
  * @param {String} colour the hex colour to set
  * @param {String} shared 'no', 'me', or 'all'
- * @param {String} multipleParents 'yes' or 'no'
+ * @param {String} multipleParents null or 'yes'
  * @param {String} email the email address of the current user
  * @param {Number} total the running total of updated folders
  * @returns {Number} the updated total
@@ -244,7 +244,7 @@ function updateFolderColour(folder, colour, shared, multipleParents, email, tota
     }
 
     // If the user doesn't want to update folders with multiple parents then skip them
-    if (multipleParents === "no") {
+    if (multipleParents !== "yes") {
       if (child.parents.length > 1) {
         Logger.log(`Skipped ${child.title} because it has multiple parents.`);
         continue;

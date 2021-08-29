@@ -126,11 +126,13 @@ function getFormSection(e) {
   const currentColour = getCurrentFolderColourName(e);
   let selectedColour;
   let currentShared;
-  let currentMultipleParents;
+  let currentMultipleParents = false;
   if (e.formInput !== undefined) {
     selectedColour = e.formInput.colour;
     currentShared = e.formInput.shared;
-    currentMultipleParents = e.formInput.multipleParents;
+    if (e.formInput.multipleParents === "yes") {
+      currentMultipleParents = true;
+    }
   }
 
   // Create the colour dropdown
@@ -189,21 +191,15 @@ function getFormSection(e) {
     }
   });
 
-  // Create the multiple parents radio buttons
-  const multipleParents = CardService.newSelectionInput()
-    .setType(CardService.SelectionInputType.RADIO_BUTTON)
-    .setFieldName("multipleParents")
-    .setTitle("Include folders with multiple parents?")
-
-  // Add the items to multiple parents
-  const multipleParentsItems = [["Yes", "yes"], ["No", "no"]];
-  multipleParentsItems.forEach(item => {
-    if (item[1] === currentMultipleParents) {
-      multipleParents.addItem(item[0], item[1], true);
-    } else {
-      multipleParents.addItem(item[0], item[1], false);
-    }
-  })
+  // Create the multiple parents switch
+  Logger.log(currentMultipleParents)
+  const multipleParents = CardService.newDecoratedText()
+    .setTopLabel("Include folders with multiple parents?")
+    .setText("Multiple parents?")
+    .setSwitchControl(CardService.newSwitch()
+        .setFieldName("multipleParents")
+        .setValue("yes")
+        .setSelected(currentMultipleParents));
 
   section.addWidget(colour)
     .addWidget(shared)
