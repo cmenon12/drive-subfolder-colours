@@ -16,7 +16,7 @@
  * @param {eventObject} e The event object
  * @returns {Card} The homepage Card
  */
-function buildDriveHomePage(e) {
+function buildDriveHomePage(e, message = undefined) {
 
   // Start to create the Card
   const header = CardService.newCardHeader()
@@ -37,6 +37,13 @@ function buildDriveHomePage(e) {
 
     return card.build();
 
+  }
+
+  // Add the result from last time if it's available
+  if (message !== undefined) {
+    const resultText = CardService.newTextParagraph().setText(`<b>${message}</b>`);
+    const resultSection = CardService.newCardSection().addWidget(resultText);
+    card.addSection(resultSection);
   }
 
   card.addSection(getFormSection(e));

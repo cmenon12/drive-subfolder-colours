@@ -157,15 +157,26 @@ function processDriveSidebarForm(e) {
   const folder = Drive.Files.get(item.id);
   const colourName = e.formInput.colour;
 
-  Logger.log(`All subfolders of ${folder.title} will be updated to ${colourName}`)
+  Logger.log(`All subfolders of ${folder.title} will be updated to ${colourName}`);
 
   // Start the execution timer
   NOW = Date.now();
 
-  const result = updateFolderColour(folder, getAllFolderColours()[colourName].hex, e.formInput.shared, e.formInput.multipleParents, Session.getActiveUser().getEmail(), 0);
-  Logger.log(`We updated ${result} folders.`)
+  const result = updateFolderColour(folder, getAllFolderColours()[colourName].hex, e.formInput.shared, e.formInput.multipleParents, Session.getActiveUser().getEmail(), 1);
+  Logger.log(`We updated ${result} folders.`);
 
-  return buildDriveHomePage(e);
+  let message;
+  if (!isTimeLeft()) {
+    message = `The execution timed out so only ${result} folders were updated.`;
+  } else {
+    if (result === 1) {
+      message = `Success! That folder was updated.`;
+    } else {
+      message = `Success! All ${result} folders were updated.`;
+    }
+  }
+
+  return buildDriveHomePage(e, message);
 
 }
 
