@@ -137,7 +137,7 @@ function getCurrentFolderColourName(e) {
 
   const item = e.drive.activeCursorItem;
   const folder = Drive.Files.get(item.id);
-  const iconLinkLarge = folder.iconLink.replace("/16/", "/64/");
+  const iconLinkLarge = folder.iconLink.replace("/16/", "/64/").replace("/32/", "/64").replace("+shared", "");
   const colourName = Object.keys(getAllFolderColours()).find(colourName => getAllFolderColours()[colourName].icon === iconLinkLarge);
   return colourName;
 

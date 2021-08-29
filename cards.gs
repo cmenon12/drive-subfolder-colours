@@ -86,6 +86,9 @@ function getConfirmationSection(e) {
     iconUrl = currentFolder.iconUrl;
   } else {
     iconUrl = getAllFolderColours()[e.formInput.colour].icon;
+    if (currentFolder.iconUrl.includes("+shared")) {
+      iconUrl = iconUrl.concat("+shared");
+    }
   }
 
   // Tell the user which folder will be updated
@@ -113,15 +116,14 @@ function getFormSection(e) {
   const section = CardService.newCardSection();
 
   // Detect if the user already filled it out
-  let currentColour;
+  const currentColour = getCurrentFolderColourName(e);
+  let selectedColour;
   let currentShared;
   let currentMultipleParents;
-  if (e.formInput === undefined) {
-    currentColour = getCurrentFolderColourName(e)
-  } else {
-    currentColour = e.formInput.colour;
+  if (e.formInput !== undefined) {
+    selectedColour = e.formInput.colour;
     currentShared = e.formInput.shared;
-    currentMultipleParents = e.formInput.multipleParents
+    currentMultipleParents = e.formInput.multipleParents;
   }
 
   // Create the colour dropdown
@@ -135,15 +137,30 @@ function getFormSection(e) {
   // Add the colours, with the current as default
   const colours = getAllFolderColours()
   for (const property in colours) {
+
     if (property === currentColour) {
+
+      // Create a selected flag
+      let selected = false;
+      if (property === selectedColour || selectedColour === undefined) {
+        selected = true;
+      }
+
+      // Need to combine current and default nicely
       if (property.includes("default")) {
         const propName = property.replace("(default)", "(current, default)");
-        colour.addItem(propName, property, true);
+        colour.addItem(propName, property, selected);
       } else {
-        colour.addItem(`${property} (current)`, property, true);
+        colour.addItem(`${property} (current)`, property, selected);
       }
+
     } else {
-      colour.addItem(property, property, false);
+      // Dont bother with a selected flag, not worth it
+      if (property === selectedColour) {
+        colour.addItem(property, property, true);
+      } else {
+        colour.addItem(property, property, false);
+      }
     }
   }
 
@@ -155,8 +172,8 @@ function getFormSection(e) {
 
   // Add the items to shared
   const sharedItems = [["Do not include shared folders", "no"],
-    ["Only include shared folders owned by me", "me"],
-    ["Include all shared folders", "all"]];
+  ["Only include shared folders owned by me", "me"],
+  ["Include all shared folders", "all"]];
   sharedItems.forEach(item => {
     if (item[1] === currentShared) {
       shared.addItem(item[0], item[1], true);
