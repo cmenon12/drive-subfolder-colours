@@ -11,7 +11,7 @@
   },
   "exceptionLogging": "STACKDRIVER",
   "oauthScopes": [
-    "https://www.googleapis.com/auth/drive.file",
+    "https://www.googleapis.com/auth/userinfo.email",
     "https://www.googleapis.com/auth/drive.addons.metadata.readonly",
     "https://www.googleapis.com/auth/drive.metadata"
   ],
@@ -24,7 +24,9 @@
         "primaryColor": "#E8EDEE",
         "secondaryColor": "#1A227E"
       },
-      "openLinkUrlPrefixes": []
+      "openLinkUrlPrefixes": [
+        "https://www.flaticon.com/"
+      ]
     },
     "drive": {
       "homepageTrigger": {

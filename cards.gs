@@ -48,6 +48,7 @@ function buildDriveHomePage(e, message = undefined) {
 
   card.addSection(getFormSection(e));
   card.addSection(getConfirmationSection(e));
+  card.addSection(getDisclaimerSection());
 
   return card.build();
 
@@ -221,4 +222,16 @@ function buildNotification(message) {
     .setNotification(CardService.newNotification()
       .setText(message))
     .build();
+}
+
+
+/**
+ * Creates the section with the standard disclaimer & attribution.
+ * @returns {CardSection} The disclaimer.
+ */
+function getDisclaimerSection() {
+  const disclaimerText = '<font color="#bdbdbd">Icon adapted from icon made by Good Ware from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>.</font>';
+  return CardService.newCardSection()
+    .addWidget(CardService.newTextParagraph()
+      .setText(disclaimerText));
 }
