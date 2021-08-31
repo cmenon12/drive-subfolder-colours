@@ -128,11 +128,15 @@ function getFormSection(e) {
   let selectedColour;
   let currentShared;
   let currentMultipleParents = false;
+  let currentShortcuts = false;
   if (e.formInput !== undefined) {
     selectedColour = e.formInput.colour;
     currentShared = e.formInput.shared;
     if (e.formInput.multipleParents === "yes") {
       currentMultipleParents = true;
+    }
+    if (e.formInput.shortcuts === "yes") {
+      currentShortcuts = true;
     }
   }
 
@@ -193,18 +197,27 @@ function getFormSection(e) {
   });
 
   // Create the multiple parents switch
-  Logger.log(currentMultipleParents)
   const multipleParents = CardService.newDecoratedText()
-    .setTopLabel("Include folders with multiple parents?")
+    .setBottomLabel("Include folders with multiple parents?")
     .setText("Multiple parents?")
     .setSwitchControl(CardService.newSwitch()
         .setFieldName("multipleParents")
         .setValue("yes")
         .setSelected(currentMultipleParents));
 
+  // Create the shortcuts switch
+  const shortcuts = CardService.newDecoratedText()
+    .setBottomLabel("Include shortcuts to folders?")
+    .setText("Follow shortcuts?")
+    .setSwitchControl(CardService.newSwitch()
+        .setFieldName("shortcuts")
+        .setValue("yes")
+        .setSelected(currentShortcuts));
+
   section.addWidget(colour)
     .addWidget(shared)
-    .addWidget(multipleParents);
+    .addWidget(multipleParents)
+    .addWidget(shortcuts);
 
   return section;
 
